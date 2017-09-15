@@ -1,56 +1,32 @@
-/*jslint indent: 2 */
-/*global window, jQuery, angular, cordova */
-"use strict";
+var cordova = require('cordova');
 
-var getPromisedCordovaExec = function (command, success, fail) {
-  var toReturn, deferred, injector, $q;
-  if (success === undefined) {
-    if (window.jQuery) {
-      deferred = jQuery.Deferred();
-      success = deferred.resolve;
-      fail = deferred.reject;
-      toReturn = deferred;
-    } else if (window.angular) {
-      injector = angular.injector(["ng"]);
-      $q = injector.get("$q");
-      deferred = $q.defer();
-      success = deferred.resolve;
-      fail = deferred.reject;
-      toReturn = deferred.promise;
-    } else if (window.when && window.when.promise) {
-      deferred = when.defer();
-      success = deferred.resolve;
-      fail = deferred.reject;
-      toReturn = deferred.promise;
-    } else if (window.Promise) {
-      toReturn = new Promise(function(c, e) {
-        success = c;
-        fail = e;
-      });
-    } else if (window.WinJS && window.WinJS.Promise) {
-      toReturn = new WinJS.Promise(function(c, e) {
-        success = c;
-        fail = e;
-      });
-    } else {
-      return console.error('AppVersion either needs a success callback, or jQuery/AngularJS/Promise/WinJS.Promise defined for using promises');
-    }
-  }
-  // 5th param is NOT optional. must be at least empty array
-  cordova.exec(success, fail, "SignatureFingerprint", command, []);
-  return toReturn;
+/**
+ * GetSignatureFingerprint plugin for Cordova
+ * 
+ * @constructor
+ */
+function GetSignatureFingerprint () {}
+
+/**
+ * Get the package name
+ *
+ * @param {Function} onSuccess The function to call in case of success
+ * @param {Function} onFail    The function to call in case of error
+ */
+GetSignatureFingerprint.prototype.getPackageName = function (onSuccess, onFail) {
+	cordova.exec(onSuccess, onFail, "SignatureFingerprint", "getPackageName", []);
 };
 
-var getSignatureFingerprint = function (success, fail) {
-  return getPromisedCordovaExec('getSignature', success, fail);
-}
+/**
+ * Gets the signature
+ *
+ * @param {Function} onSuccess The function to call in case of success
+ * @param {Function} onFail    The function to call in case of error
+ */
+GetSignatureFingerprint.prototype.getSignature = function (onSuccess, onFail) {
+	cordova.exec(onSuccess, onFail, "SignatureFingerprint", "getSignature", []);
+};
 
-getSignatureFingerprint.getPackageName = function (success, fail) {
-  return getPromisedCordovaExec('getPackageName', success, fail);
-}
-
-getSignatureFingerprint.getSignature = function (success, fail) {
-  return getPromisedCordovaExec('getSignature', success, fail);
-}
-
+// Register the plugin
+var getSignatureFingerprint = new GetSignatureFingerprint();
 module.exports = getSignatureFingerprint;
